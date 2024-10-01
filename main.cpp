@@ -18,20 +18,34 @@ int main()
     Storage storage{symbols};
     Marketdata marketdata{configuration, symbols};
     auto callback = [&storage](const std::string& response) {
-        // std::cout << response << std::endl;
         auto update = PartialBookUpdate::FromJson(response);
         if (update) {
             storage.Update(*update);
-            // auto best_bid = update->GetBestBid();
-            // std::cout << "best_bid price: " << best_bid.price << ", quantity:" << best_bid.quantity << std::endl;
-            // auto best_ask = update->GetBestAsk();
-            // std::cout << "best_ask price: " << best_ask.price << ", quantity:" << best_ask.quantity << std::endl;
-            // std::cout << "Bid VWAP: " << update->CalculateBidVWAP() << std::endl;
-            // std::cout << "Ask VWAP: " << update->CalculateAskVWAP() << std::endl;
         }
         
     };
     marketdata.start(callback);
+    
+    std::thread background_thread([&storage, &symbols]() {
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::minutes(2));
+
+            storage.PriceManager();
+
+            for (const auto& symbol : symbols) {
+                auto [best_bid, best_ask] = storage.Get(symbol);
+                std::cout << "Symbol: " << symbol << std::endl;
+                std::cout << "Best Bid - Price: " << static_cast<double>(best_bid.price) / SCALE_FACTOR
+                          << ", Quantity: " << static_cast<double>(best_bid.quantity) / SCALE_FACTOR << std::endl;
+                std::cout << "Best Ask - Price: " << static_cast<double>(best_ask.price) / SCALE_FACTOR
+                          << ", Quantity: " << static_cast<double>(best_ask.quantity) / SCALE_FACTOR << std::endl;
+                std::cout << "-------------------------------------" << std::endl;
+            }
+        }
+    });
+
     std::cin.get();
+
+    background_thread.join();
     return 0;
 }

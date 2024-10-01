@@ -7,6 +7,16 @@
 #include <ctime>
 #include <sstream>
 
+namespace {
+std::string GetSymbol(const std::string& input) {
+    size_t pos = input.find('@');
+    if (pos != std::string::npos) {
+        return input.substr(0, pos);
+    }
+    return "";
+}
+}
+
 Storage::Storage(const std::vector<std::string>& streams) {
     for (const auto& stream : streams) {
         storage_map_.emplace(stream, StorageItem());
@@ -16,7 +26,7 @@ Storage::Storage(const std::vector<std::string>& streams) {
 void Storage::Update(const PartialBookUpdate& partial_book_update) {
     std::unique_lock<std::shared_mutex> lock(mtx_);
     auto stream = partial_book_update.GetStream();
-    auto it = storage_map_.find(stream);
+    auto it = storage_map_.find(GetSymbol(stream));
     if (it != storage_map_.end()) {
         it->second.Update(partial_book_update);
     }
@@ -32,7 +42,7 @@ std::pair<BestPrice, BestPrice> Storage::Get(const std::string& stream) const {
 }
 
 void Storage::PriceManager() const {
-    std::vector<std::tuple<std::string, double, double>> data_to_write;  // Zmienione na double
+    std::vector<std::tuple<std::string, double, double>> data_to_write;
     {
         std::shared_lock<std::shared_mutex> lock(mtx_);
         for (const auto& [stream, storage_item] : storage_map_) {

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
 StorageItem::StorageItem(size_t size) 
     : vwap_bid_history_(size, 0)
     , vwap_ask_history_(size, 0)
@@ -67,9 +69,12 @@ std::pair<long long, long long> StorageItem::CalculateMovingAverage() const {
 }
 
 long long StorageItem::CalculateMovingAverage(const std::vector<long long>& history) const {
-    auto sum = 0;
+    boost::multiprecision::cpp_int sum = 0;
     for (const auto& vwap : history) {
         sum += vwap;
     }
-    return sum / static_cast<long long>(history.size());
+
+    boost::multiprecision::cpp_int average = sum / static_cast<boost::multiprecision::cpp_int>(history.size());
+
+    return static_cast<long long>(average);
 }
