@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <optional>
+#include <string>
 
 const long long SCALE_FACTOR = 100000000;
 

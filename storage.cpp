@@ -6,6 +6,7 @@
 #include <vector>
 #include <ctime>
 #include <sstream>
+#include <mutex>
 
 namespace {
 std::string GetSymbol(const std::string& input) {

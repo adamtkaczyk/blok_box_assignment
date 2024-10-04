@@ -5,6 +5,7 @@
 #include <utility>
 #include <iostream>
 #include <iomanip>
+#include <mutex>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
