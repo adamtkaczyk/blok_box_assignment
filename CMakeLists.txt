@@ -7,6 +7,7 @@ project(blok_box_assignment)
 enable_testing()
 
 find_package(Boost REQUIRED system)
+find_package(spdlog REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(fmt REQUIRED)
@@ -17,7 +18,8 @@ add_executable(blok_box_assignment
     session.cpp
     partial_book_update.cpp
     storage.cpp
-    storage_item.cpp)
+    storage_item.cpp
+    backup_logger.cpp)
 
 target_include_directories(blok_box_assignment 
     PRIVATE
@@ -29,4 +31,5 @@ target_link_libraries(blok_box_assignment
     ${OPENSSL_SSL_LIBRARY}
     ${OPENSSL_CRYPTO_LIBRARY}
     fmt::fmt-header-only
+    spdlog::spdlog
     nlohmann_json::nlohmann_json)

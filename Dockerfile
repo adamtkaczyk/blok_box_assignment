@@ -2,7 +2,7 @@ FROM gcc:latest
 
 ARG BOOST_VERSION=1.84.0
 
-RUN apt-get update --fix-missing && apt-get install -y cmake nlohmann-json3-dev libfmt-dev
+RUN apt-get update --fix-missing && apt-get install -y cmake nlohmann-json3-dev libfmt-dev libspdlog-dev
 
 RUN cd /tmp && \
     BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \

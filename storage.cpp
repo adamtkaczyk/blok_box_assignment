@@ -18,7 +18,7 @@ std::string GetSymbol(const std::string& input) {
 }
 }
 
-Storage::Storage(const std::vector<std::string>& streams) {
+Storage::Storage(const std::vector<std::string>& streams, BackupLogger& logger) : logger_(logger) {
     for (const auto& stream : streams) {
         storage_map_.emplace(stream, StorageItem());
     }
@@ -65,6 +65,7 @@ void Storage::PriceManager() const {
 
     file << "Stream,Bid_VWAP,Ask_VWAP\n";
     for (const auto& [stream, avg_bid_vwap, avg_ask_vwap] : data_to_write) {
+        logger_.LogInfo(stream, "Calculated moving averege price bid: " + std::to_string(avg_bid_vwap) + ", ask: " + std::to_string(avg_ask_vwap));
         file << stream << "," << avg_bid_vwap << "," << avg_ask_vwap << "\n";
     }
 

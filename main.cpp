@@ -4,6 +4,7 @@
 #include "session.hpp"
 #include "marketdata.hpp"
 #include "partial_book_update.hpp"
+#include "backup_logger.hpp"
 #include "storage.hpp"
 
 #include <string>
@@ -15,7 +16,9 @@ int main()
     configuration.port = "9443";
 
     const std::vector<std::string> symbols = {"btcfdusd", "ethfdusd", "adausdt", "avaxusdt"};
-    Storage storage{symbols};
+    BackupLogger logger;
+    logger.InitLoggers(symbols);
+    Storage storage{symbols, logger};
     Marketdata marketdata{configuration, symbols};
     auto callback = [&storage](const std::string& response) {
         auto update = PartialBookUpdate::FromJson(response);
@@ -25,7 +28,7 @@ int main()
         
     };
     marketdata.start(callback);
-    
+
     std::thread background_thread([&storage, &symbols]() {
         while (true) {
             std::this_thread::sleep_for(std::chrono::minutes(2));
